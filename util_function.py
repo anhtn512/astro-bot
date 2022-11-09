@@ -58,8 +58,8 @@ def get_dao(dao):
     return res.json()
 
 
-def get_proposals_by_offset(offset=0, order_by='updatedAt', order='DESC', dao=DAO, status='Approved', type='Transfer'):
-    queries = '?offset={}&orderBy={}&order={}&dao={}&status={}&type={}'.format(offset, order_by, order, DAO, status, type)
+def get_proposals_by_offset(offset=0, order_by='updatedAt', order='DESC', dao=DAO, status='Approved'):
+    queries = '?offset={}&orderBy={}&order={}&dao={}&status={}&type=Transfer'.format(offset, order_by, order, dao, status)
     link = '{}{}'.format(GET_PROPOSALS_URL, queries)
     res = requests.get(link)
     res = res.json()
@@ -122,7 +122,7 @@ def get_proposals_from_day(end_day):
     return proposals
 
 
-def get_proposals_approved_from_day(start_day):
+def get_proposals_approvals_from_day(start_day):
     start = get_day_from_arg(start_day)
     proposals = get_proposals_from_day(start)
     data = []
@@ -144,7 +144,7 @@ def get_proposals_approved_from_day(start_day):
     df = pd.DataFrame(data)
     today = date.today()
     today_str = today.strftime(format_date)
-    output_filename = "approved_from_{}_to_{}.xlsx".format(start_day, today_str)
+    output_filename = "approvals_from_{}_to_{}.xlsx".format(start_day, today_str)
     output = os.path.join(FOLDER_RESULT, output_filename)
     df.to_excel(output, index=False)
     return output, df

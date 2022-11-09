@@ -5,7 +5,6 @@ import telebot
 import logging
 
 from util_function import *
-from message_classify import *
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG)  # Outputs debug messages to console.
@@ -13,29 +12,33 @@ telebot.logger.setLevel(logging.DEBUG)  # Outputs debug messages to console.
 bot = telebot.TeleBot(TEST_TOKEN, parse_mode='Markdown')
 
 
-@bot.message_handler(func=lambda message: check_get_proposals(message.text))
+def extract_arg(arg):
+    return arg.split()[1:]
+
+
+@bot.message_handler(commands=['proposalsFromId'])
 def handle_proposals_from_id(message):
     chat_id = message.chat.id
-    text = message.text.split(' ')
-    start_id = int(text[1])
+    args = extract_arg(message.text)
+    start_id = int(args[0])
     output, df = get_proposals_from_id(start_id)
     data = open(output, 'rb')
     bot.send_document(chat_id, data)
     os.remove(output)
 
 
-@bot.message_handler(func=lambda message: check_get_approved(message.text))
-def handle_approved_from_day(message):
+@bot.message_handler(commands=['approvalsFromDay'])
+def handle_approvals_from_day(message):
     chat_id = message.chat.id
-    text = message.text.split(' ')
-    start_date = text[1]
-    output, df = get_proposals_approved_from_day(start_date)
+    args = extract_arg(message.text)
+    start_date = args[0]
+    output, df = get_proposals_approvals_from_day(start_date)
     data = open(output, 'rb')
     bot.send_document(chat_id, data)
     os.remove(output)
 
 
-@bot.message_handler(func=lambda message: check_help_bot(message.text))
+@bot.message_handler(commands=['help'])
 def handle_help(message):
     bot.reply_to(message, """
 	🤖 *Thanks for your feedback*
