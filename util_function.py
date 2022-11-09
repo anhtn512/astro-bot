@@ -58,7 +58,7 @@ def get_dao(dao):
     return res.json()
 
 
-def get_proposals_by_offset(offset=0, order_by='updatedAt', order='DESC', dao=DAO, status='Approved'):
+def get_proposals_by_offset(offset=0, order_by='', order='', dao=DAO, status=''):
     queries = '?offset={}&orderBy={}&order={}&dao={}&status={}&type=Transfer'.format(offset, order_by, order, dao, status)
     link = '{}{}'.format(GET_PROPOSALS_URL, queries)
     res = requests.get(link)
@@ -79,29 +79,29 @@ def get_proposal_by_id(id):
 def get_proposals_from_id(start_id):
     dao = get_dao(DAO)
     last_proposal_id = dao["lastProposalId"]
-    id = start_id
-    proposals = []
-    while True:
-        proposal = get_proposal_by_id(id)
-        if id > last_proposal_id:
-            break
-        if proposal is not None:
-            proposals.append(proposal)
-        id += 1
     data = []
-    for proposal in proposals:
-        temp = simplify_proposal(proposal)
-        data.append({
-            "created_at": temp["created_at"],
-            "updated_at": temp["updated_at"],
-            "tags": "",
-            "title": temp["description"],
-            "link": temp["link"],
-            "link_proposal": temp['link_proposal'],
-            "source": "x",
-            "sputnik": temp["proposalId"],
-            "collector": temp["proposer"]
-        })
+    offset = 0
+    enough = False
+    while enough is False:
+        proposals = get_proposals_by_offset(offset=offset, order_by='proposalId', order='DESC')
+        for proposal in proposals:
+            temp = simplify_proposal(proposal)
+            if temp["proposalId"] >= start_id:
+                data.append({
+                    "created_at": temp["created_at"],
+                    "updated_at": temp["updated_at"],
+                    "tags": "",
+                    "title": temp["description"],
+                    "link": temp["link"],
+                    "link_proposal": temp['link_proposal'],
+                    "source": "x",
+                    "sputnik": temp["proposalId"],
+                    "collector": temp["proposer"]
+                })
+            else:
+                enough = True
+                break
+        offset += len(proposals)
     df = pd.DataFrame(data)
     output_filename = "proposals_from_{}_to_{}.xlsx".format(start_id, last_proposal_id)
     output = os.path.join(FOLDER_RESULT, output_filename)
@@ -109,38 +109,32 @@ def get_proposals_from_id(start_id):
     return output, df
 
 
-def get_proposals_from_day(end_day):
-    offset = 0
-    proposals = get_proposals_by_offset()
-    while True:
-        temp = string_to_datetime(proposals[-1]['updatedAt'])
-        if temp > end_day:
-            offset += 50
-            proposals += get_proposals_by_offset(offset)
-        else:
-            break
-    return proposals
-
-
-def get_proposals_approvals_from_day(start_day):
+def get_approvals_from_day(start_day):
     start = get_day_from_arg(start_day)
-    proposals = get_proposals_from_day(start)
     data = []
-    for proposal in proposals:
-        update_time = string_to_datetime(proposal['updatedAt'])
-        temp = simplify_proposal(proposal)
-        if update_time > start and proposal['status'] == 'Approved':
-            data.append({
-                "created_at": temp["created_at"],
-                "updated_at": temp["updated_at"],
-                "tags": "",
-                "title": temp["description"],
-                "link": temp["link"],
-                "link_proposal": temp['link_proposal'],
-                "source": "x",
-                "sputnik": temp["proposalId"],
-                "collector": temp["proposer"]
-            })
+    offset = 0
+    enough = False
+    while enough is False:
+        proposals = get_proposals_by_offset(offset=offset, order_by='createdAt', order='DESC', status='Approved')
+        for proposal in proposals:
+            create_time = string_to_datetime(proposal['createdAt'])
+            temp = simplify_proposal(proposal)
+            if create_time > start:
+                data.append({
+                    "created_at": temp["created_at"],
+                    "updated_at": temp["updated_at"],
+                    "tags": "",
+                    "title": temp["description"],
+                    "link": temp["link"],
+                    "link_proposal": temp['link_proposal'],
+                    "source": "x",
+                    "sputnik": temp["proposalId"],
+                    "collector": temp["proposer"]
+                })
+            else:
+                enough = True
+                break
+        offset += len(proposals)
     df = pd.DataFrame(data)
     today = date.today()
     today_str = today.strftime(format_date)

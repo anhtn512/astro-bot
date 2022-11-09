@@ -32,7 +32,7 @@ def handle_approvals_from_day(message):
     chat_id = message.chat.id
     args = extract_arg(message.text)
     start_date = args[0]
-    output, df = get_proposals_approvals_from_day(start_date)
+    output, df = get_approvals_from_day(start_date)
     data = open(output, 'rb')
     bot.send_document(chat_id, data)
     os.remove(output)

@@ -8,7 +8,7 @@ def main(args):
         print("Missing parameter")
         return
     start = args[0]
-    output, df = get_proposals_approvals_from_day(start)
+    output, df = get_approvals_from_day(start)
     print(df)
     print('check on {}'.format(output))
 
