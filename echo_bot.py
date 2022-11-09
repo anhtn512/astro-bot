@@ -41,7 +41,17 @@ def handle_approvals_from_day(message):
 @bot.message_handler(commands=['help'])
 def handle_help(message):
     bot.reply_to(message, """
-	🤖 *Thanks for your feedback*
+	🤖 *Nearweek agent bot*
+	
+	⚙️ Command:
+	/proposalsFromId {start ID} : get all proposals from start ID to the latest
+	/approvalsFromDay {start day}: get all proposals which has approved from start day to current (format of day MMDDYYYY)
+	
+	Ex:
+	/proposalsFromId 1860  ==> (1860 => latest)
+	/approvalsFromDay 11012022 ==(11/01/2022 => present)
+	
+	------------------------------
 	_If you have any good ideas that you would like me to implement
 	Don't be shy, feel free to tell me (@anhtn512)_
 	""")
