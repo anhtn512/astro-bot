@@ -115,7 +115,7 @@ def get_approvals_from_day(start_day):
     offset = 0
     enough = False
     while enough is False:
-        proposals = get_proposals_by_offset(offset=offset, order_by='updatedAt', order='DESC', status='Approved')
+        proposals = get_proposals_by_offset(offset=offset, order_by='createdAt', order='DESC', status='Approved')
         for proposal in proposals:
             create_time = string_to_datetime(proposal['createdAt'])
             temp = simplify_proposal(proposal)
