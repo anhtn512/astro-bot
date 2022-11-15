@@ -38,6 +38,17 @@ def handle_approvals_from_day(message):
     os.remove(output)
 
 
+@bot.message_handler(commands=['proposalsFromDay'])
+def handle_approvals_from_day(message):
+    chat_id = message.chat.id
+    args = extract_arg(message.text)
+    start_date = args[0]
+    output, df = get_proposals_from_day(start_date)
+    data = open(output, 'rb')
+    bot.send_document(chat_id, data)
+    os.remove(output)
+
+
 @bot.message_handler(commands=['help'])
 def handle_help(message):
     bot.reply_to(message, """
@@ -45,11 +56,13 @@ def handle_help(message):
 	
 	⚙️ Command:
 	/proposalsFromId {start ID} : get all proposals from start ID to the latest
+	/proposalsFromDay {start day}: get all proposals from start day to current (format of day MMDDYYYY)
 	/approvalsFromDay {start day}: get all proposals which has approved from start day to current (format of day MMDDYYYY)
 	
 	Ex:
 	/proposalsFromId 1860  ==> (1860 => latest)
-	/approvalsFromDay 11012022 ==(11/01/2022 => present)
+	/proposalsFromDay 11012022 ==> (11/01/2022 => present)
+	/approvalsFromDay 11012022 ==> (11/01/2022 => present)
 	
 	------------------------------
 	_If you have any good ideas that you would like me to implement

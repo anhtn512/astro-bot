@@ -109,6 +109,41 @@ def get_proposals_from_id(start_id):
     return output, df
 
 
+def get_proposals_from_day(start_day):
+    start = get_day_from_arg(start_day)
+    data = []
+    offset = 0
+    enough = False
+    while enough is False:
+        proposals = get_proposals_by_offset(offset=offset, order_by='createdAt', order='DESC')
+        for proposal in proposals:
+            create_time = string_to_datetime(proposal['createdAt'])
+            temp = simplify_proposal(proposal)
+            if create_time > start:
+                data.append({
+                    "created_at": temp["created_at"],
+                    "updated_at": temp["updated_at"],
+                    "tags": "",
+                    "title": temp["description"],
+                    "link": temp["link"],
+                    "link_proposal": temp['link_proposal'],
+                    "source": "x",
+                    "sputnik": temp["proposalId"],
+                    "collector": temp["proposer"]
+                })
+            else:
+                enough = True
+                break
+        offset += len(proposals)
+    df = pd.DataFrame(data)
+    today = date.today()
+    today_str = today.strftime(format_date)
+    output_filename = "proposals_from_{}_to_{}.xlsx".format(start_day, today_str)
+    output = os.path.join(FOLDER_RESULT, output_filename)
+    df.to_excel(output, index=False)
+    return output, df
+
+
 def get_approvals_from_day(start_day):
     start = get_day_from_arg(start_day)
     data = []
