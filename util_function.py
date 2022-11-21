@@ -170,6 +170,7 @@ def get_approvals_from_day(start_day):
                 enough = True
                 break
         offset += len(proposals)
+    data.sort(key=lambda x: (x['updated_at'], x['created_at']), reverse=True)
     df = pd.DataFrame(data)
     today = date.today()
     today_str = today.strftime(format_date)
