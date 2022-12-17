@@ -1,4 +1,4 @@
-pyTelegramBotAPI
+sssssyTelegramBotAPI
 pandas
 requests
 openpyxl
