@@ -123,6 +123,7 @@ def get_proposals_from_day(start_day):
                 data.append({
                     "created_at": temp["created_at"],
                     "updated_at": temp["updated_at"],
+                    "date": create_time.strftime("%Y-%m-%d"),
                     "tags": "",
                     "title": temp["description"],
                     "link": temp["link"],
@@ -158,8 +159,10 @@ def get_approvals_from_day(start_day):
                 data.append({
                     "created_at": temp["created_at"],
                     "updated_at": temp["updated_at"],
+                    "date": create_time.strftime("%Y-%m-%d"),
                     "tags": "",
                     "title": temp["description"],
+                    "comment": "x",
                     "link": temp["link"],
                     "link_proposal": temp['link_proposal'],
                     "source": "x",
