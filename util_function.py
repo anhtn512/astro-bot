@@ -34,7 +34,10 @@ def simplify_proposal(proposal):
     link_proposal = "{}{}".format(PROPOSAL_PREFIX, proposal["id"])
     proposer = proposal["proposer"]
     content = proposal["description"].split("$$$$")
-    description, link = content[0], content[1]
+    description = content[0]
+    if len(content) > 1:
+        link = content[1]
+    else: link = ''
     description = description.replace("\n", "").replace("\b", "").encode("ascii", "ignore").decode().strip()
     return {
         "proposalId": proposal['proposalId'],
